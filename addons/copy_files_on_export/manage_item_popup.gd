@@ -13,6 +13,8 @@ signal item_upsert_requested(source: String, dest: String)
 @onready var add_button: Button = %AddButton
 @onready var file_dialog: FileDialog = %FileDialog
 @onready var source_file_text_edit: LineEdit = %SourceFileTextEdit
+@onready var source_error_label: Label = %SourceErrorLabel
+@onready var path_error_label: Label = %PathErrorLabel
 
 
 func _ready() -> void:
@@ -46,11 +48,16 @@ func _unhandled_input(event: InputEvent) -> void:
 func _validate() -> void:
 	var valid: bool = true
 
+	source_error_label.text = ""
+	path_error_label.text = ""
+
 	var destination_text: String = destination_text_edit.text
 	if not len(destination_text) or not destination_text.get_file().is_valid_filename():
+		path_error_label.text = tr("Path invalid!")
 		valid = false
 
 	if not FileAccess.file_exists(source_file_text_edit.text):
+		source_error_label.text = tr("Source file does not exist!")
 		valid = false
 
 	add_button.disabled = not valid
