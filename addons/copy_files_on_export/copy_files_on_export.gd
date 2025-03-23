@@ -2,6 +2,7 @@
 extends EditorExportPlugin
 
 var zip_path: String = ""
+var _features: PackedStringArray
 
 func _get_name() -> String:
 	return "Copy Files On Export"
@@ -11,6 +12,8 @@ func _export_begin(features: PackedStringArray, _is_debug: bool, path: String, _
 	var path_lower: String = path.to_lower()
 	var is_macos: bool = "macos" in features
 	var is_zip: bool = path_lower.ends_with(".zip")
+
+	_features = features
 
 	if (is_zip and not is_macos) or path_lower.ends_with("pck"):
 		# "Export PCK/ZIP..." option, ignore, unless its MacOS, then
@@ -34,6 +37,10 @@ func _export_begin(features: PackedStringArray, _is_debug: bool, path: String, _
 	for file_set: CFOEFileSet in _get_files():
 		var dest_path: String = export_path.path_join(file_set.dest)
 		var base: String = dest_path.get_base_dir()
+		var file_set_features: PackedStringArray = file_set.features
+
+		if len(file_set_features) and not _feature_match(features, file_set_features):
+			continue
 
 		if not DirAccess.dir_exists_absolute(base):
 			var err: int = DirAccess.make_dir_recursive_absolute(base)
@@ -72,6 +79,11 @@ func _export_end() -> void:
 
 	for file_set: CFOEFileSet in _get_files():
 		var source_data: PackedByteArray = FileAccess.get_file_as_bytes(file_set.source)
+		var file_set_features: PackedStringArray = file_set.features
+
+		if len(file_set_features) and not _feature_match(_features, file_set_features):
+			continue
+
 		if not len(source_data):
 			_push_err("Error reading \"%s\" or file empty! Skipping." % file_set.source)
 			continue
@@ -94,3 +106,10 @@ func _get_files() -> Array[CFOEFileSet]:
 
 func _push_err(error: String) -> void:
 	push_error("[copy_files_on_export] %s" % error)
+
+
+func _feature_match(requested_features: PackedStringArray, limited_features: PackedStringArray) -> bool:
+	for feature: String in limited_features:
+		if feature in requested_features:
+			return true
+	return false

@@ -2,11 +2,12 @@
 class_name CFOEManageItemPopup
 extends Window
 
-signal item_update_requested(source: String, dest: String, index: int)
+signal item_update_requested(source: String, dest: String, features: String, index: int)
 
 
 @export var source_path: String
 @export var destination_path: String
+@export var features: String
 @export var index: int = -1
 @export var action_text: String = tr("Add")
 
@@ -21,9 +22,11 @@ signal item_update_requested(source: String, dest: String, index: int)
 func _ready() -> void:
 	(%CloseButton as Button).pressed.connect(_close_window)
 	(%FilePopupButton as Button).pressed.connect(_open_file_dialog)
+
+	var features_line_edit: LineEdit = %FeaturesLineEdit
 	add_button.pressed.connect(
 		func() -> void:
-			item_update_requested.emit(source_file_text_edit.text, destination_text_edit.text, index)
+			item_update_requested.emit(source_file_text_edit.text, destination_text_edit.text, features_line_edit.text, index)
 			_close_window()
 	)
 
@@ -32,6 +35,9 @@ func _ready() -> void:
 
 	source_file_text_edit.text = source_path
 	file_dialog.current_path = source_path
+
+	features_line_edit.text = features
+
 	add_button.text = action_text
 
 	file_dialog.file_selected.connect(_on_file_dialog_selected)

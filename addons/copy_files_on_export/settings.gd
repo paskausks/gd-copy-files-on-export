@@ -5,14 +5,16 @@ const ICON_EDIT: Texture2D = preload("res://addons/copy_files_on_export/assets/e
 const ICON_DELETE: Texture2D = preload("res://addons/copy_files_on_export/assets/remove.svg")
 const PopupScene: PackedScene = preload("res://addons/copy_files_on_export/manage_item_popup.tscn")
 
-# in project settings the file list is stored as an array of string pairs
+# in project settings the file list is stored as an array of strings
 const SETTING_FILES: String = "copy_files_on_export/files"
-const SETTING_PAIR_FILE: int = 0
-const SETTING_PAIR_DEST: int = 1
+const SETTING_ARR_FILE: int = 0
+const SETTING_ARR_DEST: int = 1
+const SETTING_ARR_FEATURES: int = 2
 
 const COL_FILE: int = 0
 const COL_DESTINATION: int = 1
-const COL_TOOLS: int = 2
+const COL_FEATURES: int = 2
+const COL_TOOLS: int = 3
 
 const BUTTON_ID_EDIT: int = 0
 const BUTTON_ID_DELETE: int = 1
@@ -54,8 +56,8 @@ static func set_settings_file_list(new_list: Array[PackedStringArray]) -> void:
 static func remove_file(path: String) -> void:
 	var current_list: Array[PackedStringArray] = get_settings_file_list()
 	set_settings_file_list(current_list.filter(
-		func(pair: PackedStringArray) -> bool:
-			return pair[SETTING_PAIR_FILE] != path
+		func(arr: PackedStringArray) -> bool:
+			return arr[SETTING_ARR_FILE] != path
 	))
 
 
@@ -67,38 +69,69 @@ static func get_files() -> Array[CFOEFileSet]:
 
 	result.assign(
 		get_settings_file_list().filter(
-			func(pair: PackedStringArray) -> bool: return len(pair) == 2
+			func(arr: PackedStringArray) -> bool: return len(arr) > 2
 		).map(
-			func(pair: PackedStringArray) -> CFOEFileSet: return CFOEFileSet.create(pair[SETTING_PAIR_FILE], pair[SETTING_PAIR_DEST])
+			func(arr: PackedStringArray) -> CFOEFileSet:
+				var features: PackedStringArray
+
+				if len(arr) == 2:
+					features = PackedStringArray()
+				else:
+					var features_raw: String = arr[SETTING_ARR_FEATURES]
+					if not len(features_raw):
+						features = PackedStringArray()
+					else:
+						# can't map() a PackedStringArray yet.
+						var features_arr: PackedStringArray = features_raw.split(",")
+						for i: int in len(features_arr):
+							features_arr[i] = features_arr[i].strip_edges()
+						features = features_arr
+
+				return CFOEFileSet.create(
+					arr[SETTING_ARR_FILE],
+					arr[SETTING_ARR_DEST],
+
+					# handle v0.1.0 data which did not have features yet
+					features,
+				),
 		)
 	)
 
 	return result
 
 
-func add_treeitem(source: String, dest: String) -> TreeItem:
+func add_treeitem(source: String, dest: String, features: String) -> TreeItem:
 	var item: TreeItem = tree.create_item(tree_root)
 	item.set_text(COL_FILE, source)
 	item.set_text(COL_DESTINATION, dest)
+	item.set_text(COL_FEATURES, features)
 	item.add_button(COL_TOOLS, ICON_EDIT, BUTTON_ID_EDIT, false, tr("Edit"))
 	item.add_button(COL_TOOLS, ICON_DELETE, BUTTON_ID_DELETE, false, tr("Delete"))
 	return item
 
 
-func update_item(source: String, dest: String, idx: int) -> void:
+func update_item(source: String, dest: String, features: String, idx: int) -> void:
 	var item: TreeItem
 	var file_list: Array[PackedStringArray] = get_settings_file_list()
 	if idx == -1:
-		file_list.append(PackedStringArray([source, dest]))
-		item = add_treeitem(source, dest)
+		file_list.append(PackedStringArray([source, dest, features]))
+		item = add_treeitem(source, dest, features)
 		tree.scroll_to_item(item)
 	else:
 		item = tree_root.get_child(idx)
 		item.set_text(COL_FILE, source)
 		item.set_text(COL_DESTINATION, dest)
+		item.set_text(COL_FEATURES, features)
 
-		file_list[idx][SETTING_PAIR_FILE] = source
-		file_list[idx][SETTING_PAIR_DEST] = dest
+		var entry: PackedStringArray = file_list[idx] 
+		entry[SETTING_ARR_FILE] = source
+		entry[SETTING_ARR_DEST] = dest
+
+		if len(entry) == 2:
+			# v0.1.0 entry
+			entry.append(features)
+		else:
+			entry[SETTING_ARR_FEATURES] = features
 
 	set_settings_file_list(file_list)
 
@@ -125,6 +158,7 @@ func _on_tree_button_clicked(item: TreeItem, column: int, id: int, mouse_button_
 		scene.title = tr("Edit file...")
 		scene.destination_path = item.get_text(COL_DESTINATION)
 		scene.source_path = item.get_text(COL_FILE)
+		scene.features = item.get_text(COL_FEATURES)
 		scene.index = item.get_index()
 		scene.action_text = tr("Edit")
 		scene.item_update_requested.connect(update_item, CONNECT_ONE_SHOT)
@@ -151,9 +185,12 @@ func _setup_tree() -> void:
 	tree.set_column_title(COL_DESTINATION, tr("Path in export location"))
 	tree.set_column_title_alignment(COL_DESTINATION, HORIZONTAL_ALIGNMENT_LEFT)
 
+	tree.set_column_title(COL_FEATURES, tr("Limited to features"))
+	tree.set_column_title_alignment(COL_FEATURES, HORIZONTAL_ALIGNMENT_LEFT)
+
 	tree.set_column_expand(COL_TOOLS, false)
 
 	tree.button_clicked.connect(_on_tree_button_clicked)
 
-	for pair in get_settings_file_list():
-		add_treeitem(pair[SETTING_PAIR_FILE], pair[SETTING_PAIR_DEST])
+	for arr in get_settings_file_list():
+		add_treeitem(arr[SETTING_ARR_FILE], arr[SETTING_ARR_DEST], arr[SETTING_ARR_FEATURES] if len(arr) > 2 else "")

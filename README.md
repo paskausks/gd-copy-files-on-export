@@ -2,7 +2,7 @@
 
 # Copy Files On Export, a Godot addon
 
-Copy Files On Export is an addon for [Godot 4](https://godotengine.org) which allows you to define a set of files which will be copied alongside the project when it is exported! Useful if you want to include a README or other files for your users without having to copy the files manually or set up automation via external means.
+Copy Files On Export is an addon for [Godot 4](https://godotengine.org) which allows you to define a set of files which will be copied alongside the project when it is exported, optionally filterable by feature! Useful if you want to include a README or other files for your users without having to copy the files manually or set up automation via external means.
 
 ![Screenshot of the addon's settings section in Project ](media/screenshot1.png)
 
@@ -10,7 +10,7 @@ The minimum supported Godot version is Godot 4.2, although it likely also works 
 
 ## Installation
 
-First, make sure you have a valid Godot engine version
+First, make sure you have a valid Godot engine version.
 
 Download the ZIP from github and put the `addons` folder in your project root or just look up the addon on the Godot AssetLib and press Download!
 
@@ -26,15 +26,18 @@ To configure the addon, head to _Project_ → _Project Settings_ → _Copy Files
 * `./foo/bar/some-file.txt`
 * etc.
 
+If you want to limit the file to one or more specific feature tags, you can enter them comma-separated in the `Limit to features` field.
+
 For example, if you define the following set of files:
 
-| File                                    | Path in export location          |
-|-----------------------------------------|----------------------------------|
-| res://README.txt                        | README.txt                       |
-| res://LICENCE.txt                       | LICENCE.txt                      |
-| res://assets/fonts/fira_sans/LICENSE.md | licenses/fira-sans-SIL.md        |
-| res://assets/backgrounds/city.png       | goodies/wallpapers/city.png      |
-| res://addons/dialogue_manager/LICENSE   | licenses/dialogue-manager-MIT.md |
+| File                                    | Path in export location          | Limited to features   |
+|-----------------------------------------|----------------------------------|-----------------------|
+| res://README.txt                        | README.txt                       |                       |
+| res://LICENCE.txt                       | LICENCE.txt                      |                       |
+| res://assets/fonts/fira_sans/LICENSE.md | licenses/fira-sans-SIL.md        |                       |
+| res://addons/dialogue_manager/LICENSE   | licenses/dialogue-manager-MIT.md |                       |
+| res://assets/backgrounds/city.png       | goodies/wallpapers/city.png      | windows, macos, linux |
+| res://assets/stylesheet.css             | stylesheet.css                   | web                   |
 
 After exporting your project your target folder (or ZIP file) will have the following structure:
 
@@ -48,11 +51,14 @@ After exporting your project your target folder (or ZIP file) will have the foll
 │   └── fira-sans-SIL.md
 ├── LICENSE.txt
 ├── README.txt
+├── stylesheet.css
 ├── your_game.exe
 └── your_game.pck
 ```
 
-(On MacOS, the data will be placed alongside the `*.app`)
+The file `goodies/wallpapers/city.png` will only be included in exports with the `pc` feature tag (e.g. Windows, MacOS or Linux exports), while `stylesheet.css` will be included in exports which have either the `web` or `linux` tags.
+
+On MacOS, the data will be placed alongside the `*.app`. Android and iOS exports are currently untested, therefore, "officially" unsupported. I'll appreciate any test results you can post!
 
 ## Troubleshooting
 
