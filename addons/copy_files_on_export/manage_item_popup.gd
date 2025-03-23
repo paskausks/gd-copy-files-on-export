@@ -87,4 +87,8 @@ func _open_file_dialog() -> void:
 
 func _on_file_dialog_selected(path: String) -> void:
 	source_file_text_edit.text = path
+
+	if not len(destination_text_edit.text):
+		destination_text_edit.text = path.get_file()
+
 	_validate()
