@@ -49,19 +49,32 @@ func _unhandled_input(event: InputEvent) -> void:
 func _validate() -> void:
 	var valid: bool = true
 
-	source_error_label.text = ""
-	path_error_label.text = ""
+	_set_source_error("")
+	_set_dest_error("")
 
 	var destination_text: String = destination_text_edit.text
-	if not len(destination_text) or not destination_text.get_file().is_valid_filename():
-		path_error_label.text = tr("Path invalid!")
+	if not len(destination_text):
+		valid = false
+	elif not destination_text.get_file().is_valid_filename():
+		_set_dest_error(tr("Path invalid!"))
 		valid = false
 
-	if not FileAccess.file_exists(source_file_text_edit.text):
-		source_error_label.text = tr("Source file does not exist!")
+	var source_text: String = source_file_text_edit.text
+	if not len(source_text):
+		valid = false
+	elif not FileAccess.file_exists(source_text):
+		_set_source_error(tr("Source file does not exist!"))
 		valid = false
 
 	add_button.disabled = not valid
+
+
+func _set_source_error(text: String) -> void:
+	source_error_label.text = text
+
+
+func _set_dest_error(text: String) -> void:
+	path_error_label.text = text
 
 
 func _close_window() -> void:
