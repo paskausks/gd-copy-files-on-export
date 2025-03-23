@@ -2,11 +2,12 @@
 class_name CFOEManageItemPopup
 extends Window
 
-signal item_upsert_requested(source: String, dest: String)
+signal item_update_requested(source: String, dest: String, index: int)
 
 
 @export var source_path: String
 @export var destination_path: String
+@export var index: int = -1
 @export var action_text: String = tr("Add")
 
 @onready var destination_text_edit: LineEdit = %DestinationTextEdit
@@ -22,7 +23,7 @@ func _ready() -> void:
 	(%FilePopupButton as Button).pressed.connect(_open_file_dialog)
 	add_button.pressed.connect(
 		func() -> void:
-			item_upsert_requested.emit(source_file_text_edit.text, destination_text_edit.text)
+			item_update_requested.emit(source_file_text_edit.text, destination_text_edit.text, index)
 			_close_window()
 	)
 

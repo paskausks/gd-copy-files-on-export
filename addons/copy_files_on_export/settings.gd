@@ -85,27 +85,20 @@ func add_treeitem(source: String, dest: String) -> TreeItem:
 	return item
 
 
-func upsert_item(source: String, dest: String) -> void:
-	var existing_idx: int = -1
-
-	var file_list: Array[PackedStringArray] = get_settings_file_list()
-	for i: int in len(file_list):
-		if file_list[i][SETTING_PAIR_FILE] == source:
-			existing_idx = i
-			break
-
+func update_item(source: String, dest: String, idx: int) -> void:
 	var item: TreeItem
-	if existing_idx == -1:
+	var file_list: Array[PackedStringArray] = get_settings_file_list()
+	if idx == -1:
 		file_list.append(PackedStringArray([source, dest]))
 		item = add_treeitem(source, dest)
 		tree.scroll_to_item(item)
 	else:
-		item = tree_root.get_child(existing_idx)
+		item = tree_root.get_child(idx)
 		item.set_text(COL_FILE, source)
 		item.set_text(COL_DESTINATION, dest)
 
-		file_list[existing_idx][SETTING_PAIR_FILE] = source
-		file_list[existing_idx][SETTING_PAIR_DEST] = dest
+		file_list[idx][SETTING_PAIR_FILE] = source
+		file_list[idx][SETTING_PAIR_DEST] = dest
 
 	set_settings_file_list(file_list)
 
@@ -132,8 +125,9 @@ func _on_tree_button_clicked(item: TreeItem, column: int, id: int, mouse_button_
 		scene.title = tr("Edit file...")
 		scene.destination_path = item.get_text(COL_DESTINATION)
 		scene.source_path = item.get_text(COL_FILE)
+		scene.index = item.get_index()
 		scene.action_text = tr("Edit")
-		scene.item_upsert_requested.connect(upsert_item, CONNECT_ONE_SHOT)
+		scene.item_update_requested.connect(update_item, CONNECT_ONE_SHOT)
 		add_child(scene)
 		scene.show()
 
@@ -144,7 +138,7 @@ func _setup_add() -> void:
 			var scene: CFOEManageItemPopup = PopupScene.instantiate()
 			add_child(scene)
 			scene.title = tr("Add file...")
-			scene.item_upsert_requested.connect(upsert_item)
+			scene.item_update_requested.connect(update_item)
 			scene.show()
 	)
 
