@@ -10,11 +10,11 @@ font_size = 12
 font_color = Color(1, 0, 0, 1)
 
 [node name="Popup" type="Window"]
-initial_position = 1
+initial_position = 4
 size = Vector2i(300, 450)
+visible = false
 transient = true
 exclusive = true
-popup_window = true
 script = ExtResource("1_0rh2a")
 action_text = "Add"
 
