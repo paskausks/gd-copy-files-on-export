@@ -42,9 +42,9 @@ theme_override_constants/margin_bottom = 16
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="SourceFileLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
+[node name="SourcePathLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Source file:"
+text = "Source path:"
 
 [node name="ChooseFileContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 36)
@@ -52,7 +52,7 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 16
 
-[node name="SourceFileTextEdit" type="LineEdit" parent="PanelContainer/MarginContainer/VBoxContainer/ChooseFileContainer"]
+[node name="SourcePathTextEdit" type="LineEdit" parent="PanelContainer/MarginContainer/VBoxContainer/ChooseFileContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -110,8 +110,9 @@ text = "Close"
 
 [node name="FileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
-title = "Open a File"
+title = "Select a File or Directory"
 initial_position = 4
 size = Vector2i(400, 400)
 ok_button_text = "Open"
-file_mode = 0
+mode_overrides_title = false
+file_mode = 3

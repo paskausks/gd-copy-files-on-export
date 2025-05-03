@@ -22,7 +22,7 @@ theme_override_constants/separation = 16
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_vertical = 0
-text = "Define files here that will be copied alongside the game export. The first column is a path to a file within your project folder, and the second column is its target path relative to the export folder. These files will be copied when you select \"Export Project…\". PCK/ZIP export is currently not supported."
+text = "Here you can define paths that will be copied alongside the game export. The first column is a path to a file or directory within your project folder, and the second column is its target path relative to the export folder. The files in these paths will be copied when you select \"Export Project…\". PCK/ZIP export is currently not supported."
 autowrap_mode = 2
 
 [node name="AddButton" type="Button" parent="VBoxContainer"]
