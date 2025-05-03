@@ -14,7 +14,7 @@ signal item_update_requested(source: String, dest: String, features: String, ind
 @onready var destination_text_edit: LineEdit = %DestinationTextEdit
 @onready var add_button: Button = %AddButton
 @onready var file_dialog: FileDialog = %FileDialog
-@onready var source_file_text_edit: LineEdit = %SourceFileTextEdit
+@onready var source_path_text_edit: LineEdit = %SourcePathTextEdit
 @onready var source_error_label: Label = %SourceErrorLabel
 @onready var path_error_label: Label = %PathErrorLabel
 
@@ -26,21 +26,22 @@ func _ready() -> void:
 	var features_line_edit: LineEdit = %FeaturesLineEdit
 	add_button.pressed.connect(
 		func() -> void:
-			item_update_requested.emit(source_file_text_edit.text, destination_text_edit.text, features_line_edit.text, index)
+			item_update_requested.emit(source_path_text_edit.text, destination_text_edit.text, features_line_edit.text, index)
 			_close_window()
 	)
 
 	destination_text_edit.text = destination_path
 	destination_text_edit.text_changed.connect(_validate.unbind(1))
 
-	source_file_text_edit.text = source_path
+	source_path_text_edit.text = source_path
 	file_dialog.current_path = source_path
 
 	features_line_edit.text = features
 
 	add_button.text = action_text
 
-	file_dialog.file_selected.connect(_on_file_dialog_selected)
+	file_dialog.file_selected.connect(_on_dialog_path_selected)
+	file_dialog.dir_selected.connect(_on_dialog_path_selected)
 
 	close_requested.connect(_close_window)
 
@@ -65,11 +66,11 @@ func _validate() -> void:
 		_set_dest_error(tr("Path invalid!"))
 		valid = false
 
-	var source_text: String = source_file_text_edit.text
+	var source_text: String = source_path_text_edit.text
 	if not len(source_text):
 		valid = false
-	elif not FileAccess.file_exists(source_text):
-		_set_source_error(tr("Source file does not exist!"))
+	elif not FileAccess.file_exists(source_text) and not DirAccess.dir_exists_absolute(source_text):
+		_set_source_error(tr("Source path does not exist!"))
 		valid = false
 
 	add_button.disabled = not valid
@@ -91,8 +92,8 @@ func _open_file_dialog() -> void:
 	file_dialog.show()
 
 
-func _on_file_dialog_selected(path: String) -> void:
-	source_file_text_edit.text = path
+func _on_dialog_path_selected(path: String) -> void:
+	source_path_text_edit.text = path
 
 	if not len(destination_text_edit.text):
 		destination_text_edit.text = path.get_file()

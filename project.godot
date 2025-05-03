@@ -16,7 +16,7 @@ config/icon="res://icon.svg"
 
 [copy_files_on_export]
 
-files=Array[PackedStringArray]([PackedStringArray("res://icon.svg", "icon.svg", "")])
+files=Array[PackedStringArray]([PackedStringArray("res://icon.svg", "icon.svg", ""), PackedStringArray("res://addons/copy_files_on_export/assets", "svg", "")])
 
 [debug]
 

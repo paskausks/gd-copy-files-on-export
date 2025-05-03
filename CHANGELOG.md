@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.0 - UNRELEASED
+
+* directory support
+* logging on success as well, not just on failure
+
 ## v0.2.0 - 2025-03-23
 
 * add edit form validation messages
