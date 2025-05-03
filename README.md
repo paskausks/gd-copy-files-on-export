@@ -61,7 +61,7 @@ After exporting your project your target folder (or ZIP file) will have the foll
 └── your_game.pck
 ```
 
-The file `goodies/wallpapers/city.png` will only be included in exports with the `windows` `macos` or `linux` feature tags (i.e. Windows, MacOS or Linux exports), while `stylesheet.css` will be included in exports which have either the `web` or `linux` tags. The `redist` folder will only be included on Windows exports.
+The file `goodies/wallpapers/city.png` will only be included in exports with the `windows` `macos` or `linux` feature tags (i.e. Windows, MacOS or Linux exports), while `stylesheet.css` will be included in exports which have the `web` tag (that is, Web exports). The `redist` folder will only be included on Windows exports.
 
 Directories will be copied recursively - their contents will be copied in their entirety. For your convenience, `.import` and `.uid` files will be skipped.
 
