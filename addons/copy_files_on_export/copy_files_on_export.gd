@@ -59,23 +59,12 @@ func _export_end() -> void:
 		return
 
 	for file_set: CFOEFileSet in _get_files():
-		var source_data: PackedByteArray = FileAccess.get_file_as_bytes(file_set.source)
 		var file_set_features: PackedStringArray = file_set.features
 
 		if len(file_set_features) and not _feature_match(_features, file_set_features):
 			continue
 
-		if not len(source_data):
-			_push_err("Error reading \"%s\" or file empty! Skipping." % file_set.source)
-			continue
-
-		if writer.start_file(file_set.dest) != OK:
-			_push_err("Error adding \"%s\" to target ZIP! Skipping." % file_set.dest)
-			continue
-
-		if writer.write_file(source_data) != OK:
-			_push_err("Error writing to \"%s\" in target ZIP! Skipping." % file_set.dest)
-			continue
+		_write_to_zip(writer, file_set.source, file_set.dest)
 
 	zip_path = ""
 	writer.close_file()
@@ -114,8 +103,7 @@ func _copy(source_path: String, dest_path: String) -> void:
 		sub_paths.append_array(DirAccess.get_directories_at(source_path))
 
 		for sub_path in sub_paths:
-			if not DirAccess.dir_exists_absolute(source_path.path_join(sub_path)) and (sub_path.ends_with(".import") or sub_path.ends_with(".uid")):
-				# i don't think anyone actually needs "import" and "guid" files to be copied.
+			if _ignore_path(source_path.path_join(sub_path)):
 				continue
 			_copy(source_path.path_join(sub_path), dest_path.path_join(sub_path))
 		return
@@ -136,3 +124,36 @@ func _copy(source_path: String, dest_path: String) -> void:
 	dest.close()
 
 	_log("Copied \"%s\"" % source_path)
+
+
+func _write_to_zip(zip_packer: ZIPPacker, source_path: String, dest_path: String) -> void:
+	if DirAccess.dir_exists_absolute(source_path):
+		var sub_paths: PackedStringArray = DirAccess.get_files_at(source_path) 
+		sub_paths.append_array(DirAccess.get_directories_at(source_path))
+
+		for sub_path in sub_paths:
+			if _ignore_path(source_path.path_join(sub_path)):
+				continue
+			_write_to_zip(zip_packer, source_path.path_join(sub_path), dest_path.path_join(sub_path))
+		return
+
+	var source_data: PackedByteArray = FileAccess.get_file_as_bytes(source_path)
+
+	if not len(source_data):
+		_push_err("Error reading \"%s\" or file empty! Skipping." % source_path)
+		return
+
+	if zip_packer.start_file(dest_path) != OK:
+		_push_err("Error adding \"%s\" to target ZIP! Skipping." % dest_path)
+		return
+
+	if zip_packer.write_file(source_data) != OK:
+		_push_err("Error writing to \"%s\" in target ZIP! Skipping." % dest_path)
+		return
+
+	_log("Wrote \"%s\" to the target ZIP" % source_path)
+
+
+func _ignore_path(path: String) -> bool:
+	# i don't think anyone actually needs "import" and "guid" files to be copied.
+	return not DirAccess.dir_exists_absolute(path) and (path.ends_with(".import") or path.ends_with(".uid"))
