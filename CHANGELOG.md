@@ -1,9 +1,10 @@
 # Changelog
 
-## v0.3.0 - UNRELEASED
+## v0.3.0 - 2025-05-03
 
-* directory support
-* logging on success as well, not just on failure
+* add directory support (#2)
+* add logging on success as well, not just on failure
+* fix weird "Add" dialog behavior when project.godot isn't on the main monitor in multi-monitor setups.
 
 ## v0.2.0 - 2025-03-23
 
