@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.1 - 2025-09-17
+
+* fix issue where enabling the plugin unnecessarily stretched the height of the Project Settings window.
+* increase minimum size of the "Add" dialog to address size issues on Windows.
+* increase minimum size of the File selection dialog.
+
 ## v0.3.0 - 2025-05-03
 
 * add directory support (#2)
