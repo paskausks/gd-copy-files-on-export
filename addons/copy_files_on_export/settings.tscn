@@ -3,11 +3,6 @@
 [ext_resource type="Script" uid="uid://c462ehqq5yd62" path="res://addons/copy_files_on_export/settings.gd" id="1_xqts1"]
 
 [node name="Copy Files On Export" type="MarginContainer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -19,7 +14,7 @@ layout_mode = 2
 theme_override_constants/separation = 16
 
 [node name="Label" type="Label" parent="VBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 size_flags_vertical = 0
 text = "Here you can define paths that will be copied alongside the game export. The first column is a path to a file or directory within your project folder, and the second column is its target path relative to the export folder. The files in these paths will be copied when you select \"Export Project…\". PCK/ZIP export is currently not supported."
