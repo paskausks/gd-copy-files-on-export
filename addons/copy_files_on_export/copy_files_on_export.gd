@@ -12,19 +12,16 @@ func _get_name() -> String:
 
 func _export_begin(features: PackedStringArray, _is_debug: bool, path: String, _flags: int) -> void:
 	var path_lower: String = path.to_lower()
-	var is_macos: bool = "macos" in features
-	var is_zip: bool = path_lower.ends_with(".zip")
 
 	_features = features
 
-	if (is_zip and not is_macos) or path_lower.ends_with("pck"):
-		# "Export PCK/ZIP..." option, ignore, unless its MacOS, then
-		# we can't really tell that option apart
+	if path_lower.ends_with("pck"):
+		# "Export PCK/ZIP..." option, ignore
 		return
 
-	if is_zip and is_macos:
-		# For MacOS a temp directory is not created, so we'll just append
-		# to the zip file that's created.
+	if path_lower.ends_with(".zip"):
+		# For ZIPs, a temp directory is not created, so we'll just append
+		# to the ZIP file that's created.
 		zip_path = path
 		return
 
@@ -49,7 +46,7 @@ func _export_end() -> void:
 	if not len(zip_path):
 		return
 
-	# handle MacOS ZIP export
+	# handle ZIP export
 	var writer: ZIPPacker = ZIPPacker.new()
 	var err: Error = writer.open(zip_path, ZIPPacker.ZipAppend.APPEND_ADDINZIP)
 

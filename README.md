@@ -6,7 +6,7 @@ Copy Files On Export is an addon for [Godot 4](https://godotengine.org) which al
 
 ![Screenshot of the addon's settings section in Project ](media/screenshot1.png)
 
-The minimum supported Godot version is Godot 4.2, although it likely also works on older Godot 4 releases.
+The minimum supported Godot version is Godot 4.7. If your project uses Godot 4.6 or older, please use version v0.3.1 of this plugin.
 
 ## Installation
 

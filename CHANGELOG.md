@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.0 - 2026-07-27
+
+* For Godot 4.7 (and, probably, future versions), adjust ZIP logic path to append to ZIP, instead of writing to a temporary directory on all desktop platforms, not just MacOS. Accordingly, raise the minimum supported version for v0.4.0 to Godot 4.7. Thanks to @MyrTheMoth for reporting.
+
 ## v0.3.1 - 2025-09-17
 
 * fix issue where enabling the plugin unnecessarily stretched the height of the Project Settings window.
